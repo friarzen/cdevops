@@ -1,3 +1,7 @@
 ---
 modules::default_node:
     - 'sshd'
+
+modules::web_node:
+    - 'nginx'
+    - 'sshd'
