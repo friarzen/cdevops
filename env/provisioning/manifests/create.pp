@@ -6,7 +6,7 @@
 #
 # creates a load balancer and a basic web instance with SSH access
 #
-#  YOU WILL NEED TO CREATE A KEYPAIR IN AWS NAMED cdevopskey TO CONNECT.
+#  You will need to create a keypair in AWS named 'cdevopskey' to connect.
 #
 
 Ec2_securitygroup {
@@ -18,36 +18,42 @@ Ec2_instance {
   availability_zone => 'us-east-1a',
 }
 
-Elb_loadbalancer {
-  region => 'us-east-1',
-}
-
-ec2_securitygroup { 'lb-secgrp':
-  ensure      => present,
-  description => 'Security group for load balancer',
-  ingress     => [
-    {
-      protocol => 'tcp',
-      port     => 80,
-      cidr     => '0.0.0.0/0'
-    },
-    {
-      protocol => 'tcp',
-      port     => 443,
-      cidr     => '0.0.0.0/0'
-    }
-  ],
-}
+#Elb_loadbalancer {
+#  region => 'us-east-1',
+#}
+#
+#ec2_securitygroup { 'lb-secgrp':
+#  ensure      => present,
+#  description => 'Security group for load balancer',
+#  ingress     => [
+#    {
+#      protocol => 'tcp',
+#      port     => 80,
+#      cidr     => '0.0.0.0/0'
+#    },
+#    {
+#      protocol => 'tcp',
+#      port     => 443,
+#      cidr     => '0.0.0.0/0'
+#    }
+#  ],
+#}
 
 ec2_securitygroup { 'web-secgrp':
   ensure      => present,
   description => 'Security group for web servers',
   ingress     => [
     {
-      security_group => 'lb-secgrp',
-    },{
       protocol => 'tcp',
       port     => 22,
+      cidr     => '0.0.0.0/0'
+    },{
+      protocol => 'tcp',
+      port     => 80,
+      cidr     => '0.0.0.0/0'
+    },{
+      protocol => 'tcp',
+      port     => 443,
       cidr     => '0.0.0.0/0'
     }
   ],
@@ -65,22 +71,22 @@ ec2_instance { ['web1']:
   user_data       => template('/etc/puppet/env/provisioning/templates/user-data.erb'),
 }
 
-elb_loadbalancer { 'lb1':
-  ensure             => present,
-  availability_zones => ['us-east-1a'],
-  instances          => ['web1'],
-  listeners          => [
-    {
-      protocol           => 'tcp',
-      load_balancer_port => 80,
-      instance_protocol  => 'tcp',
-      instance_port      => 80,
-    },
-    {
-      protocol           => 'tcp',
-      load_balancer_port => 443,
-      instance_protocol  => 'tcp',
-      instance_port      => 443,
-    },
-  ],
-}
+#elb_loadbalancer { 'lb1':
+#  ensure             => present,
+#  availability_zones => ['us-east-1a'],
+#  instances          => ['web1'],
+#  listeners          => [
+#    {
+#      protocol           => 'tcp',
+#      load_balancer_port => 80,
+#      instance_protocol  => 'tcp',
+#      instance_port      => 80,
+#    },
+#    {
+#      protocol           => 'tcp',
+#      load_balancer_port => 443,
+#      instance_protocol  => 'tcp',
+#      instance_port      => 443,
+#    },
+#  ],
+#}
