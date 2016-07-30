@@ -66,7 +66,6 @@ ec2_instance { ['web1']:
   image_id        => 'ami-656be372',
   security_groups => ['web-secgrp'],
   instance_type   => 't1.micro',
-  tenancy         => 'default',
   key_name        => 'cdevopskey',
   user_data       => template('/etc/puppet/env/provisioning/templates/user-data.erb'),
 }
