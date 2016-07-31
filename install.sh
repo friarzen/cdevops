@@ -203,11 +203,21 @@ if [ "$?" != 0 ]; then
 fi
 
 # validate firewall
-nmap $PUBIP
+if [ `nmap -p1-21,23-79,81-442,444-65535 $PUBIP | grep "^[0-9]" | wc -l` != "0" ]; then
+	echo "Invalid scannable ports detected"
+	exit 1
+fi
 
-# test1 -- should produce a 300-range redirect error page
-curl -ks "http://$PUBIP:80/"
+# test1 -- should produce a 301 redirect error page
+if ! curl -ks "http://$PUBIP:80/" | grep "301 Moved Permanently" ; then
+	echo "Invalid redirect response detected"
+	exit 1
+fi 
 
-# test1 -- should produce the bland "Hello World" html
-curl -Lks "http://$PUBIP:80/"
+# test2 -- should redirect and produce the bland "Hello World" html
+if [ `curl -Lks "http://$PUBIP:80/" | md5sum` = "cda50b8445ec91c9f1d0ec23dafcd010  -" ]; then
+	echo "Invalid http to https response detected"
+	exit 1
+fi
 
+exit 0
