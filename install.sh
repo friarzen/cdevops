@@ -202,22 +202,24 @@ if [ "$?" != 0 ]; then
 	exit 1
 fi
 
-# validate firewall
-if [ `nmap -p1-21,23-79,81-442,444-65535 $PUBIP | grep "^[0-9]" | wc -l` != "0" ]; then
-	echo "Invalid scannable ports detected"
-	exit 1
-fi
-
 # test1 -- should produce a 301 redirect error page
 if ! curl -ks "http://$PUBIP:80/" | grep "301 Moved Permanently" ; then
-	echo "Invalid redirect response detected"
-	exit 1
-fi 
+        echo "Invalid redirect response detected"
+        exit 1
+fi
 
 # test2 -- should redirect and produce the bland "Hello World" html
-if [ `curl -Lks "http://$PUBIP:80/" | md5sum` = "cda50b8445ec91c9f1d0ec23dafcd010  -" ]; then
-	echo "Invalid http to https response detected"
-	exit 1
+MD5SUM=`curl -Lks "http://$PUBIP/" | md5sum`
+if [ "$MD5SUM" = "cda50b8445ec91c9f1d0ec23dafcd010  -" ]; then
+        echo "Invalid http to https response detected"
+        exit 1
+fi
+
+echo "running full scan nmap....this will take a long time"
+# validate firewall
+if [ `nmap -p1-21,23-79,81-442,444-65535 $PUBIP | grep "^[0-9]" | wc -l` != "0" ]; then
+        echo "Invalid scannable ports detected"
+        exit 1
 fi
 
 exit 0
